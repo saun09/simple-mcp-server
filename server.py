@@ -9,7 +9,6 @@ app = FastAPI()
 # ===== MCP Request and Response =====
 
 class MCPRequest(BaseModel):
-    tool: str
     prompt: str
     context: str
 
@@ -25,21 +24,14 @@ def summarize(context: str, prompt: str) -> str:
 
 # ===== Tool 2: Basic Grammar Checker =====
 
-def grammar_check(context: str, prompt: str) -> str:
-    text = context
-    corrections = {
-        "i ": "I ",
-        " i ": " I ",
-        "dont": "don't",
-        "cant": "can't",
-        "wont": "won't",
-        "im ": "I'm ",
-        " its ": " it's ",
-        " didnt ": " didn't ",
-    }
-    for wrong, right in corrections.items():
-        text = text.replace(wrong, right)
-    return text
+import language_tool_python
+
+tool = language_tool_python.LanguageTool('en-US')
+
+def grammar_check(context, prompt):
+    matches = tool.check(context)
+    corrected = language_tool_python.utils.correct(context, matches)
+    return corrected
 
 # ===== Tool 3: Keyword Extractor =====
 
@@ -50,11 +42,25 @@ def extract_keywords(context: str, prompt: str) -> str:
     top_keywords = Counter(filtered).most_common(5)
     return ", ".join([kw for kw, count in top_keywords])
 
+
+#======
+def route_tool(prompt: str) -> str:
+    prompt_lower = prompt.lower()
+    if "summarize" in prompt_lower or "summary" in prompt_lower:
+        return "summarize"
+    elif "grammar" in prompt_lower or "correct" in prompt_lower or "fix" in prompt_lower:
+        return "grammar_check"
+    elif "keywords" in prompt_lower or "important words" in prompt_lower:
+        return "keywords"
+    else:
+        return "unknown"
+
 # ===== Router =====
 
 @app.post("/mcp")
 async def mcp_tool(request: MCPRequest):
-    tool = request.tool.lower()
+    tool = route_tool(request.prompt)
+    
     if tool == "summarize":
         result = summarize(request.context, request.prompt)
     elif tool == "grammar_check":
@@ -62,6 +68,7 @@ async def mcp_tool(request: MCPRequest):
     elif tool == "keywords":
         result = extract_keywords(request.context, request.prompt)
     else:
-        result = f"Unknown tool: {request.tool}"
+        result = f"Unknown or unhandled tool routed from prompt."
+    
     return MCPResponse(result=result)
 
