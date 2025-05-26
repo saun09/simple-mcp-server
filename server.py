@@ -16,21 +16,27 @@ class MCPResponse(BaseModel):
     result: str
 
 # ===== Tool 1: Naive Summarizer =====
+from transformers import pipeline
+
+summarizer_pipeline = pipeline("summarization", model="facebook/bart-large-cnn")
 
 def summarize(context: str, prompt: str) -> str:
-    sentences = re.split(r'(?<=[.!?]) +', context)
-    top_sentences = sentences[:3]  # naive top 3 sentences
-    return " ".join(top_sentences)
+    summary = summarizer_pipeline(context, max_length=130, min_length=30, do_sample=False)
+    return summary[0]['summary_text']
 
 # ===== Tool 2: Basic Grammar Checker =====
 
-import language_tool_python
+from transformers import AutoTokenizer, AutoModelForSeq2SeqLM
+import torch
 
-tool = language_tool_python.LanguageTool('en-US')
+tokenizer = AutoTokenizer.from_pretrained("prithivida/grammar_error_correcter_v1")
+model = AutoModelForSeq2SeqLM.from_pretrained("prithivida/grammar_error_correcter_v1")
 
 def grammar_check(context, prompt):
-    matches = tool.check(context)
-    corrected = language_tool_python.utils.correct(context, matches)
+    input_text = f"gec: {context}"
+    inputs = tokenizer.encode(input_text, return_tensors="pt", max_length=512, truncation=True)
+    outputs = model.generate(inputs, max_length=512, num_beams=5, early_stopping=True)
+    corrected = tokenizer.decode(outputs[0], skip_special_tokens=True)
     return corrected
 
 # ===== Tool 3: Keyword Extractor =====
