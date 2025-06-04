@@ -14,7 +14,7 @@ MCP lets AI models like Claude access dynamic tools and data beyond their traini
 
 - Clone this repo  
 - Install dependencies with `pip install mcp[cli] requests uvicorn`  
-- Add your API keys in `server.py` (for weather or other APIs)  
+- Add your API keys in `server.py` 
 - Run the server with:  
 
 
