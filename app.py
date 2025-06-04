@@ -2,7 +2,7 @@
 import streamlit as st
 import requests
 
-st.title("🧠 MCP Server Client")
+st.title(" MCP Server Client")
 
 context = st.text_area("Context", height=200)
 prompt = st.text_input("Prompt")
