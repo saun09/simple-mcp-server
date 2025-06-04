@@ -29,7 +29,7 @@ You can connect this server to Claude Desktop or any MCP-compatible client.
 ## Learn More
 
 Read my full blog post to understand the project in detail:  
-[Model Context Protocol Servers - What, Why, and Building Your First One!](https://medium.com/@saundaryasubramaniam/model-context-protocol-servers-what-why-and-building-your-first-one-7ccb015c8d4f)
+[Model Context Protocol Servers - What, Why, and Building Your First One!]([(https://medium.com/@saundaryasubramaniam/model-context-protocol-mcp-because-your-models-need-a-boss-too-7ccb015c8d4f])
 
 ---
 
