@@ -33,6 +33,3 @@ Read my full blog post to understand the project in detail:
 
 ---
 
-## License
-
-MIT © Saundarya Subramaniam
